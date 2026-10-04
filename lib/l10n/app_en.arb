@@ -1,0 +1,19 @@
+{
+    "@@locale": "en",
+    "appName": "Anganwadi Connect",
+    "nayan_jyoti": "NAYAN JYOTI",
+    "welcome": "Welcome Back",
+    "login": "Login",
+    "logout": "Logout",
+    "advanced_eye_care": "Advanced Eye Care",
+    "modern_technology_better_vision": "Modern technology for better vision",
+    "expert_eye_specialists": "Expert Eye Specialists",
+    "professional_care_you_can_trust": "Professional care you can trust",
+    "complete_vision_care": "Complete Vision Care",
+    "your_vision_is_our_priority": "Your vision is our priority",
+    "username": "Username",
+    "password": "Password",
+    "username_required": "Please enter username",
+    "password_required": "Please enter password",
+    "password_min_length": "Password must be at least 6 characters"
+}

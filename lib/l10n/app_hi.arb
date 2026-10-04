@@ -1,0 +1,19 @@
+{
+    "@@locale": "hi",
+    "appName": "आंगनवाड़ी कनेक्ट",
+    "nayan_jyoti": "नयन ज्योति",
+    "welcome": "वापसी पर स्वागत है",
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "advanced_eye_care": "उन्नत नेत्र देखभाल",
+    "modern_technology_better_vision": "बेहतर दृष्टि के लिए आधुनिक तकनीक",
+    "expert_eye_specialists": "विशेषज्ञ नेत्र चिकित्सक",
+    "professional_care_you_can_trust": "विश्वसनीय और विशेषज्ञ देखभाल",
+    "complete_vision_care": "संपूर्ण दृष्टि देखभाल",
+    "your_vision_is_our_priority": "आपकी दृष्टि हमारी प्राथमिकता है",
+    "username": "यूज़रनेम",
+    "password": "पासवर्ड",
+    "username_required": "कृपया यूज़रनेम दर्ज करें",
+    "password_required": "कृपया पासवर्ड दर्ज करें",
+    "password_min_length": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए"
+}
