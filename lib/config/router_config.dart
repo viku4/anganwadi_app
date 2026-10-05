@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:anganwadi_connect/config/routing_service.dart';
 import 'package:anganwadi_connect/views/anganwadi/anganwadi_create_screen.dart';
-import 'package:anganwadi_connect/views/anganwadi/anganwadi_list_screen.dart';
+import 'package:anganwadi_connect/views/branch/brnach_create_screen.dart';
 import 'package:anganwadi_connect/views/employee/employee_add_screen.dart';
 import 'package:anganwadi_connect/views/employee/employee_list_screen.dart';
 import 'package:anganwadi_connect/views/home_screen.dart';
@@ -49,15 +49,15 @@ class PageRouter {
         name: Routes.employeeAddScreen.name,
         builder: (context, state) => const EmployeeAddScreen(),
       ),
-       GoRoute(
+      GoRoute(
         path: Routes.anganwadiAddScreen.path,
         name: Routes.anganwadiAddScreen.name,
         builder: (context, state) => const AnganwadiAddScreen(),
       ),
-       GoRoute(
-        path: Routes.anganwadiListScreen.path,
-        name: Routes.anganwadiListScreen.name,
-        builder: (context, state) => const AnganwadiListScreen(),
+      GoRoute(
+        path: Routes.branchAddScreen.path,
+        name: Routes.branchAddScreen.name,
+        builder: (context, state) => const BranchAddScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

@@ -14,7 +14,8 @@ class HomeProvider extends ChangeNotifier {
   List<StateDictrictBlocModel> get dictricts => _dictricts;
   List<StateDictrictBlocModel> _blocks = [];
   List<StateDictrictBlocModel> get blocks => _blocks;
-
+  List<StateDictrictBlocModel> _villages = [];
+  List<StateDictrictBlocModel> get villages => _villages;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -80,6 +81,36 @@ class HomeProvider extends ChangeNotifier {
         );
       } else {
         _blocks = [];
+      }
+    } catch (e) {
+      log("getDistricts Error :$e");
+    } finally {
+      setLoading = false;
+    }
+  }
+
+  Future getVillages({
+    String? stateId,
+    String? districtId,
+    String? blockId,
+  }) async {
+    setLoading = true;
+    try {
+      final data = await ApiClient().request(
+        path: villagesUrl,
+        method: RequestMethod.post,
+        payload: {
+          "state_id": stateId,
+          "district_id": districtId,
+          "block_id": blockId,
+        },
+      );
+      if (data is List) {
+        _villages = List.from(
+          data.map((e) => StateDictrictBlocModel.fromJson(e)),
+        );
+      } else {
+        _villages = [];
       }
     } catch (e) {
       log("getDistricts Error :$e");

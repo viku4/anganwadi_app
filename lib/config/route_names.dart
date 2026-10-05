@@ -29,9 +29,9 @@ class Routes {
     name: "employee_add_screen",
     path: "/employee_add_screen",
   );
-  static const PageRouterName anganwadiListScreen = PageRouterName(
-    name: "anganwadi_list_screen",
-    path: "/anganwadi_list_screen",
+  static const PageRouterName branchAddScreen = PageRouterName(
+    name: "branch_add_screen",
+    path: "/branch_add_screen",
   );
   static const PageRouterName anganwadiAddScreen = PageRouterName(
     name: "anganwadi_add_screen",

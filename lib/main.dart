@@ -1,3 +1,5 @@
+import 'package:anganwadi_connect/controllers/anganwadi_provider.dart';
+import 'package:anganwadi_connect/controllers/branch_provider.dart';
 import 'package:anganwadi_connect/controllers/employee_provider.dart';
 import 'package:anganwadi_connect/controllers/home_provider.dart';
 import 'package:anganwadi_connect/controllers/language_provider.dart';
@@ -29,7 +31,11 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<HomeProvider>.value(value: homeProvider),
+        ChangeNotifierProvider<BranchProvider>.value(value: branchProvider),
 
+        ChangeNotifierProvider<AnganwadiProvider>.value(
+          value: anganwadiProvider,
+        ),
         ChangeNotifierProvider<RoleController>.value(value: roleController),
         ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
         ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),

@@ -17,3 +17,6 @@ const String refreshTokenUrl = 'users/refreshToken';
 const String statesUrl = 'homes/states';
 const String districtsUrl = 'homes/districts';
 const String blocksUrl = 'homes/blocks';
+const String villagesUrl = 'homes/villages';
+const String anganwadiCreateUrl = 'anganwadi/create';
+const String branchCreateUrl = 'branch/create';

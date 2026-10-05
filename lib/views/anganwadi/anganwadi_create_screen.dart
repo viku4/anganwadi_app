@@ -1,4 +1,6 @@
 import 'package:anganwadi_connect/components/custom_dropdown.dart';
+import 'package:anganwadi_connect/components/input_fields.dart';
+import 'package:anganwadi_connect/controllers/anganwadi_provider.dart';
 import 'package:anganwadi_connect/controllers/home_provider.dart';
 import 'package:anganwadi_connect/models/state_dictrict_bloc_model.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,16 @@ class AnganwadiAddScreen extends StatefulWidget {
 class _AnganwadiAddScreenState extends State<AnganwadiAddScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
-  final TextEditingController _centerController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-
+  final _nameController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _centerController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _userNameController = TextEditingController();
+  final _pincodeController = TextEditingController();
+  bool _obscurePassword = true;
   @override
   void initState() {
     super.initState();
@@ -31,9 +38,8 @@ class _AnganwadiAddScreenState extends State<AnganwadiAddScreen> {
   StateDictrictBlocModel? _selectedState;
   StateDictrictBlocModel? _selectedDistrict;
   StateDictrictBlocModel? _selectedBlock;
+  StateDictrictBlocModel? _selectedVillage;
 
-  bool _isActive = true;
-  bool _isLoading = false;
   @override
   void dispose() {
     _nameController.dispose();
@@ -41,103 +47,6 @@ class _AnganwadiAddScreenState extends State<AnganwadiAddScreen> {
     _centerController.dispose();
     _addressController.dispose();
     super.dispose();
-  }
-
-  Future<void> _createAnganwadi() async {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_selectedState == null) {
-      _showError("Please select state");
-      return;
-    }
-
-    if (_selectedDistrict == null) {
-      _showError("Please select district");
-      return;
-    }
-
-    if (_selectedBlock == null) {
-      _showError("Please select block");
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final Map<String, dynamic> data = {
-        "name": _nameController.text.trim(),
-        "mobile": _mobileController.text.trim(),
-        "state": _selectedState,
-        "district": _selectedDistrict,
-        "block": _selectedBlock,
-        "anganwadiCenter": _centerController.text.trim(),
-        "address": _addressController.text.trim(),
-        "isActive": _isActive,
-      };
-
-      debugPrint("Anganwadi Data: $data");
-
-      // TODO: Call your API here.
-      //
-      // await api.createAnganwadi(data);
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Anganwadi created successfully")),
-      );
-
-      Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
-
-      _showError("Something went wrong");
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  InputDecoration _inputDecoration({
-    required String label,
-    required IconData icon,
-    String? hint,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      prefixIcon: Icon(icon),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(width: 1.5),
-      ),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      filled: true,
-    );
   }
 
   Widget _sectionTitle({required String title, required IconData icon}) {
@@ -153,262 +62,393 @@ class _AnganwadiAddScreenState extends State<AnganwadiAddScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    String? hint,
-    TextInputType? keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      maxLines: maxLines,
-      textInputAction: maxLines > 1
-          ? TextInputAction.newline
-          : TextInputAction.next,
-      decoration: _inputDecoration(label: label, icon: icon, hint: hint),
-      validator: validator,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
-
+    final anganwadiProvider = Provider.of<AnganwadiProvider>(context);
     return Scaffold(
       appBar: AppBar(title: const Text("Create Anganwadi"), centerTitle: true),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _sectionTitle(
-                  title: "Personal Information",
-                  icon: Icons.person_outline,
-                ),
+      body: (homeProvider.isLoading || anganwadiProvider.isLoading)
+          ? Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _sectionTitle(
+                        title: "Anganwadi Details",
+                        icon: Icons.home_work_outlined,
+                      ),
 
-                const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-                _buildTextField(
-                  controller: _nameController,
-                  label: "Name",
-                  icon: Icons.person_outline,
-                  hint: "Enter name",
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Please enter name";
-                    }
+                      TextFieldData(
+                        controller: _centerController,
+                        label: "Anganwadi Center Name",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        prefixIcon: Icon(Icons.home_work_outlined),
+                        hintText: "Enter Anganwadi center name",
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter Anganwadi center";
+                          }
 
-                    if (value.trim().length < 3) {
-                      return "Name must be at least 3 characters";
-                    }
+                          return null;
+                        },
+                      ),
 
-                    return null;
-                  },
-                ),
+                      const SizedBox(height: 10),
 
-                const SizedBox(height: 16),
+                      TextFieldData(
+                        controller: _addressController,
+                        label: "Address",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
 
-                _buildTextField(
-                  controller: _mobileController,
-                  label: "Mobile",
-                  icon: Icons.phone_outlined,
-                  hint: "Enter 10 digit mobile number",
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Please enter mobile number";
-                    }
+                        prefixIcon: Icon(Icons.location_on_outlined),
+                        hintText: "Enter complete address",
+                        maxLines: 4,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter address";
+                          }
 
-                    if (value.length != 10) {
-                      return "Enter valid 10 digit mobile number";
-                    }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      CustomDropdownSearch(
+                        items: homeProvider.states,
+                        hintText: 'Select State',
+                        showSearchBox: false,
+                        selectedItem: _selectedState,
+                        popupType: PopupType.dialog,
+                        itemAsString: (p1) => p1.name ?? "",
+                        prefixIcon: Icons.badge_outlined,
+                        onChanged: (p0) async {
+                          if (_selectedState != p0) {
+                            setState(() {
+                              _selectedState = p0;
+                              _selectedVillage = null;
+                              _selectedDistrict = null;
+                              _selectedBlock = null;
+                            });
+                            await homeProvider.getDistricts(
+                              stateId: _selectedState?.id,
+                            );
+                          }
+                        },
+                      ),
+                      if (_selectedState != null) const SizedBox(height: 10),
+                      if (_selectedState != null)
+                        CustomDropdownSearch(
+                          items: homeProvider.dictricts,
+                          hintText: 'Select Dictrict',
+                          showSearchBox: false,
+                          selectedItem: _selectedDistrict,
+                          popupType: PopupType.dialog,
+                          itemAsString: (p1) => p1.name ?? "",
+                          prefixIcon: Icons.badge_outlined,
+                          onChanged: (p0) async {
+                            if (_selectedDistrict != p0) {
+                              setState(() {
+                                _selectedVillage = null;
+                                _selectedDistrict = p0;
+                                _selectedBlock = null;
+                              });
+                              await homeProvider.getBlocks(
+                                stateId: _selectedState?.id,
+                                districtId: _selectedDistrict?.id,
+                              );
+                            }
+                          },
+                        ),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null))
+                        const SizedBox(height: 10),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null))
+                        CustomDropdownSearch(
+                          items: homeProvider.blocks,
+                          hintText: 'Select Block',
+                          showSearchBox: false,
+                          selectedItem: _selectedBlock,
+                          popupType: PopupType.dialog,
+                          itemAsString: (p1) => p1.name ?? "",
+                          prefixIcon: Icons.badge_outlined,
+                          onChanged: (p0) async {
+                            if (_selectedBlock != p0) {
+                              setState(() {
+                                _selectedVillage = null;
+                                _selectedBlock = p0;
+                              });
+                              await homeProvider.getVillages(
+                                stateId: _selectedState?.id,
+                                districtId: _selectedDistrict?.id,
+                                blockId: _selectedBlock?.id,
+                              );
+                            }
+                          },
+                        ),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null) &&
+                          (_selectedBlock != null))
+                        const SizedBox(height: 10),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null) &&
+                          (_selectedBlock != null))
+                        CustomDropdownSearch(
+                          items: homeProvider.villages,
+                          hintText: 'Select Block',
+                          showSearchBox: false,
+                          selectedItem: _selectedVillage,
+                          popupType: PopupType.dialog,
+                          itemAsString: (p1) => p1.name ?? "",
+                          prefixIcon: Icons.badge_outlined,
+                          onChanged: (p0) async {
+                            if (_selectedVillage != p0) {
+                              setState(() {
+                                _selectedVillage = p0;
+                              });
+                            }
+                          },
+                        ),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null) &&
+                          (_selectedBlock != null) &&
+                          (_selectedVillage != null))
+                        const SizedBox(height: 10),
+                      if ((_selectedState != null) &&
+                          (_selectedDistrict != null) &&
+                          (_selectedBlock != null) &&
+                          (_selectedVillage != null))
+                        TextFieldData(
+                          controller: _pincodeController,
+                          label: "PIN Code",
+                          hintText: "Enter PIN code",
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(6),
+                          ],
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          prefixIcon: const Icon(Icons.location_on_outlined),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "PIN code is required";
+                            }
 
-                    return null;
-                  },
-                ),
+                            if (value.trim().length != 6) {
+                              return "Enter a valid 6-digit PIN code";
+                            }
 
-                const SizedBox(height: 28),
+                            if (value.trim().startsWith('0')) {
+                              return "Enter a valid PIN code";
+                            }
 
-                _sectionTitle(
-                  title: "Location",
-                  icon: Icons.location_on_outlined,
-                ),
+                            return null;
+                          },
+                        ),
+                      const SizedBox(height: 20),
+                      _sectionTitle(
+                        title: "Anganwadi Person",
+                        icon: Icons.person_outline,
+                      ),
 
-                const SizedBox(height: 16),
-                CustomDropdownSearch(
-                  items: homeProvider.states,
-                  hintText: 'Select State',
-                  showSearchBox: false,
-                  selectedItem: _selectedState,
-                  popupType: PopupType.dialog,
-                  itemAsString: (p1) => p1.name ?? "",
-                  prefixIcon: Icons.badge_outlined,
-                  onChanged: (p0) async {
-                    if (_selectedState != p0) {
-                      setState(() {
-                        _selectedState = p0;
-                        _selectedDistrict = null;
-                        _selectedBlock = null;
-                      });
-                      await homeProvider.getDistricts(
-                        stateId: _selectedState?.id,
-                      );
-                    }
-                  },
-                ),
-                if (_selectedState != null) const SizedBox(height: 28),
-                if (_selectedState != null)
-                  CustomDropdownSearch(
-                    items: homeProvider.dictricts,
-                    hintText: 'Select Dictrict',
-                    showSearchBox: false,
-                    selectedItem: _selectedDistrict,
-                    popupType: PopupType.dialog,
-                    itemAsString: (p1) => p1.name ?? "",
-                    prefixIcon: Icons.badge_outlined,
-                    onChanged: (p0) async {
-                      if (_selectedDistrict != p0) {
-                        setState(() {
-                          _selectedDistrict = p0;
-                          _selectedBlock = null;
-                        });
-                        await homeProvider.getBlocks(
-                          stateId: _selectedState?.id,
-                          districtId: _selectedDistrict?.id,
-                        );
-                      }
-                    },
-                  ),
-                if ((_selectedState != null) && (_selectedDistrict != null))
-                  const SizedBox(height: 28),
-                if ((_selectedState != null) && (_selectedDistrict != null))
-                  CustomDropdownSearch(
-                    items: homeProvider.blocks,
-                    hintText: 'Select Block',
-                    showSearchBox: false,
-                    selectedItem: _selectedBlock,
-                    popupType: PopupType.dialog,
-                    itemAsString: (p1) => p1.name ?? "",
-                    prefixIcon: Icons.badge_outlined,
-                    onChanged: (p0) async {
-                      if (_selectedBlock != p0) {
-                        setState(() {
-                          _selectedBlock = p0;
-                        });
-                      }
-                    },
-                  ),
+                      const SizedBox(height: 20),
 
-                const SizedBox(height: 28),
-                _sectionTitle(
-                  title: "Anganwadi Details",
-                  icon: Icons.home_work_outlined,
-                ),
+                      TextFieldData(
+                        controller: _nameController,
+                        label: "Name",
+                        prefixIcon: Icon(Icons.person_outline),
+                        hintText: "Enter name",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
 
-                const SizedBox(height: 16),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter name";
+                          }
 
-                _buildTextField(
-                  controller: _centerController,
-                  label: "Anganwadi Center",
-                  icon: Icons.home_work_outlined,
-                  hint: "Enter Anganwadi center name",
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Please enter Anganwadi center";
-                    }
+                          if (value.trim().length < 3) {
+                            return "Name must be at least 3 characters";
+                          }
 
-                    return null;
-                  },
-                ),
+                          return null;
+                        },
+                      ),
 
-                const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
-                _buildTextField(
-                  controller: _addressController,
-                  label: "Address",
-                  icon: Icons.location_on_outlined,
-                  hint: "Enter complete address",
-                  maxLines: 4,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Please enter address";
-                    }
+                      TextFieldData(
+                        controller: _emailController,
+                        label: "Email",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
 
-                    return null;
-                  },
-                ),
+                        hintText: "Enter email address",
+                        prefixIcon: Icon(Icons.email_outlined),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Email is required";
+                          }
 
-                const SizedBox(height: 20),
+                          final emailRegex = RegExp(
+                            r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                          );
 
-                Card(
-                  elevation: 0,
-                  child: SwitchListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    title: const Text(
-                      "Active Status",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text(
-                      _isActive
-                          ? "Anganwadi is active"
-                          : "Anganwadi is inactive",
-                    ),
-                    secondary: Icon(
-                      _isActive
-                          ? Icons.check_circle_outline
-                          : Icons.cancel_outlined,
-                    ),
-                    value: _isActive,
-                    onChanged: (value) {
-                      setState(() {
-                        _isActive = value;
-                      });
-                    },
-                  ),
-                ),
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return "Enter a valid email";
+                          }
 
-                const SizedBox(height: 30),
+                          return null;
+                        },
+                      ),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _createAnganwadi,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text(
+                      const SizedBox(height: 10),
+
+                      TextFieldData(
+                        controller: _phoneController,
+                        label: "Phone",
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
+                        hintText: "Enter phone number",
+                        prefixIcon: Icon(Icons.phone_outlined),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Phone number is required";
+                          }
+
+                          if (value.trim().length < 10) {
+                            return "Enter a valid phone number";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFieldData(
+                        controller: _userNameController,
+                        label: "Username",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
+                        hintText: "Enter username",
+                        prefixIcon: const Icon(Icons.person_outline_rounded),
+                        keyboardType: TextInputType.text,
+                        // textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-z0-9_.]'),
+                          ),
+                          LengthLimitingTextInputFormatter(30),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Username is required";
+                          }
+
+                          if (value.trim().length < 3) {
+                            return "Username must be at least 3 characters";
+                          }
+
+                          if (!RegExp(
+                            r'^[a-z0-9_.]+$',
+                          ).hasMatch(value.trim())) {
+                            return "Only lowercase letters, numbers, _ and . are allowed";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+
+                      TextFieldData(
+                        controller: _passwordController,
+                        label: "Password",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
+                        hintText: "Enter password",
+                        prefixIcon: Icon(Icons.lock_outline),
+                        obscureText: _obscurePassword,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password is required";
+                          }
+
+                          if (value.length < 6) {
+                            return "Password must be at least 6 characters";
+                          }
+
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: anganwadiProvider.isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    Object payload = {
+                                      "name": _centerController.text,
+                                      "stateId": _selectedState?.id,
+                                      "districtId": _selectedDistrict?.id,
+                                      "blockId": _selectedBlock?.id,
+                                      "villageId": _selectedVillage?.id,
+                                      "pincode": _pincodeController.text,
+                                      "address": _addressController.text,
+                                      "partnerName": _nameController.text,
+                                      "partnerUsername":
+                                          _userNameController.text,
+                                      "partnerPassword":
+                                          _passwordController.text,
+                                      "partnerEmail": _emailController.text,
+                                      "partnerPhone": _phoneController.text,
+                                    };
+
+                                    await anganwadiProvider.createAnganwadi(
+                                      payload: payload,
+                                    );
+                                  }
+                                },
+                          child: const Text(
                             "Create Anganwadi",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 16),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
