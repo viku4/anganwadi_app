@@ -2,6 +2,7 @@ import 'package:anganwadi_connect/components/input_fields.dart';
 import 'package:anganwadi_connect/config/route_names.dart';
 import 'package:anganwadi_connect/config/routing_service.dart';
 import 'package:anganwadi_connect/controllers/employee_provider.dart';
+import 'package:anganwadi_connect/controllers/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           (employee.phone ?? '').toLowerCase().contains(query) ||
           (employee.email ?? '').toLowerCase().contains(query);
     }).toList();
-
+    final loginProvider = Provider.of<LoginProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -114,19 +115,25 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
       // --------------------------------------------------
       // Floating Add Button
       // --------------------------------------------------
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          RoutingService().pushNamed(Routes.employeeAddScreen.name);
-        },
-        backgroundColor: const Color(0xFF3F7D3A),
-        foregroundColor: Colors.white,
-        elevation: 3,
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text(
-          'Add Employee',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-      ),
+      floatingActionButton:
+          [
+            "branch_head",
+            "aganwadi_head",
+          ].contains(loginProvider.loginModel?.roleId?.slug)
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                RoutingService().pushNamed(Routes.employeeAddScreen.name);
+              },
+              backgroundColor: const Color(0xFF3F7D3A),
+              foregroundColor: Colors.white,
+              elevation: 3,
+              icon: const Icon(Icons.person_add_alt_1_rounded),
+              label: const Text(
+                'Add Employee',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            )
+          : null,
     );
   }
 }

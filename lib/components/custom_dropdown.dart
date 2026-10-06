@@ -1,5 +1,8 @@
+import 'package:anganwadi_connect/core/theme/app_colors.dart';
+import 'package:anganwadi_connect/core/theme/theme_provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomDropdownSearch<T> extends StatelessWidget {
   final List<T> items;
@@ -11,6 +14,8 @@ class CustomDropdownSearch<T> extends StatelessWidget {
   final String? Function(T?)? validator;
   final PopupType? popupType;
   final bool? showSearchBox;
+  final AutovalidateMode? autoValidateMode;
+
   final bool? filled;
   final Color? fillColor;
   final InputBorder? outlineInputBorder;
@@ -32,10 +37,17 @@ class CustomDropdownSearch<T> extends StatelessWidget {
     this.outlineInputBorder,
     this.hintStyle,
     this.iconColor,
+    this.autoValidateMode,
   });
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    final bool isDark = themeProvider.isDark;
+    final Color borderColor = isDark
+        ? AppColors.darkBorder
+        : AppColors.lightBorder;
     return DropdownSearch<T>(
       items: (filter, loadProps) => items,
       selectedItem: selectedItem,
@@ -43,7 +55,7 @@ class CustomDropdownSearch<T> extends StatelessWidget {
       compareFn: (item1, item2) => item1 == item2,
       validator: validator,
       onSelected: onChanged,
-
+      autoValidateMode: autoValidateMode,
       textProps: TextProps(style: hintStyle ?? TextStyle()),
       popupProps: _getPopupProps(
         popupType: popupType,
@@ -51,6 +63,11 @@ class CustomDropdownSearch<T> extends StatelessWidget {
       ),
       decoratorProps: DropDownDecoratorProps(
         decoration: InputDecoration(
+          errorStyle: const TextStyle(
+            color: AppColors.error,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
           hintText: hintText,
           filled: filled ?? true,
           fillColor: fillColor,
@@ -58,22 +75,54 @@ class CustomDropdownSearch<T> extends StatelessWidget {
           prefixIcon: prefixIcon != null
               ? Icon(prefixIcon, color: iconColor)
               : null,
-          border:
-              outlineInputBorder ??
-              OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.3),
-                ),
-              ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: borderColor, width: 1),
+          ),
+
+          // ==========================================================
+          // ENABLED BORDER
+          // ==========================================================
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: borderColor, width: 1),
           ),
+
+          // ==========================================================
+          // FOCUSED BORDER
+          // ==========================================================
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.white, width: 2),
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
           ),
+
+          // ==========================================================
+          // DISABLED BORDER
+          // ==========================================================
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: borderColor.withOpacity(0.5),
+              width: 1,
+            ),
+          ),
+
+          // ==========================================================
+          // ERROR BORDER
+          // ==========================================================
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: AppColors.error, width: 1),
+          ),
+
+          // ==========================================================
+          // FOCUSED ERROR BORDER
+          // ==========================================================
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          ),
+
           hintStyle: hintStyle ?? TextStyle(fontSize: 15),
         ),
       ),

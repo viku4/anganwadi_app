@@ -24,9 +24,9 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
   final _passwordController = TextEditingController();
   final _userNameController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isActive = true;
 
   RoleModel? _selectedRole;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -61,6 +61,8 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                       TextFieldData(
                         controller: _nameController,
                         label: "Employee Name",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
                         hintText: "Enter Employee name",
                         prefixIcon: Icon(Icons.person_outline),
                         validator: (value) {
@@ -81,6 +83,7 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                       TextFieldData(
                         controller: _emailController,
                         label: "Email",
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
 
                         hintText: "Enter email address",
                         prefixIcon: Icon(Icons.email_outlined),
@@ -111,6 +114,8 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(10),
                         ],
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+
                         hintText: "Enter phone number",
                         prefixIcon: Icon(Icons.phone_outlined),
                         keyboardType: TextInputType.phone,
@@ -133,7 +138,7 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                         hintText: "Enter username",
                         prefixIcon: const Icon(Icons.person_outline_rounded),
                         keyboardType: TextInputType.text,
-                        // textInputAction: TextInputAction.next,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                             RegExp(r'[a-z0-9_.]'),
@@ -166,6 +171,7 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                         hintText: "Enter password",
                         prefixIcon: Icon(Icons.lock_outline),
                         obscureText: _obscurePassword,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         suffixIcon: IconButton(
                           onPressed: () {
                             setState(() {
@@ -197,11 +203,19 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                       CustomDropdownSearch(
                         items: roleController.getRole,
                         hintText: 'Select Role',
+                        autoValidateMode: AutovalidateMode.onUserInteraction,
+
                         showSearchBox: false,
                         selectedItem: _selectedRole,
                         popupType: PopupType.dialog,
                         itemAsString: (p1) => p1.name ?? "",
                         prefixIcon: Icons.badge_outlined,
+                        validator: (value) {
+                          if (value == null) {
+                            return "Role is required";
+                          }
+                          return null;
+                        },
                         onChanged: (p0) {
                           setState(() {
                             _selectedRole = p0;
@@ -222,19 +236,20 @@ class _EmployeeAddScreenState extends State<EmployeeAddScreen> {
                               ? null
                               : () async {
                                   // log("ElevatedButton${widget.userModel}");
+                                  if (_formKey.currentState!.validate()) {
+                                    Object payload = {
+                                      "name": _nameController.text,
+                                      "roleId": _selectedRole?.id,
+                                      "phone": _phoneController.text,
+                                      "username": _userNameController.text,
+                                      "email": _emailController.text,
 
-                                  Object payload = {
-                                    "name": _nameController.text,
-                                    "roleId": _selectedRole?.id,
-                                    "phone": _phoneController.text,
-                                    "username": _userNameController.text,
-                                    "email": _emailController.text,
-
-                                    "password": _passwordController.text,
-                                  };
-                                  await employeeProvider.setAndUpdateGuest(
-                                    payload: payload,
-                                  );
+                                      "password": _passwordController.text,
+                                    };
+                                    await employeeProvider.setAndUpdateGuest(
+                                      payload: payload,
+                                    );
+                                  }
                                 },
                           icon: roleController.isLoading
                               ? const SizedBox(
