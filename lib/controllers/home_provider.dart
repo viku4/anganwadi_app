@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:anganwadi_connect/models/anganwadi_model.dart';
 import 'package:anganwadi_connect/models/state_dictrict_bloc_model.dart';
 import 'package:anganwadi_connect/services/network/api_client.dart';
 import 'package:anganwadi_connect/services/network/api_endpoints.dart';
@@ -117,5 +118,28 @@ class HomeProvider extends ChangeNotifier {
     } finally {
       setLoading = false;
     }
+  }
+
+  AnganwadiModel? _anganwadiModel;
+  AnganwadiModel? get anganwadiModel => _anganwadiModel;
+
+  Future getHomeData() async {
+    setLoading = true;
+    try {
+      final data = await ApiClient().request(
+        path: homeDataUrl,
+        method: RequestMethod.get,
+      );
+      if (data is Map && data.isNotEmpty) {
+        _anganwadiModel = AnganwadiModel.fromJson(
+          Map<String, dynamic>.from(data),
+        );
+      }
+    } catch (e) {
+      log("getDistricts Error :$e");
+    } finally {
+      setLoading = false;
+    }
+    notifyListeners();
   }
 }

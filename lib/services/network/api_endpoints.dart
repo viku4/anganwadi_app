@@ -1,11 +1,11 @@
 //office
-const String baseUrl = 'http://192.168.0.154:5000/api/';
+// const String baseUrl = 'http://192.168.0.154:5000/api/';
 
 //live
 // const String baseUrl = 'https://hotel-mangement-mxh7.onrender.com/api/';
 
 //pg
-// const String baseUrl = 'http://192.168.1.3:5000/api/';
+const String baseUrl = 'http://192.168.1.3:5000/api/';
 
 const String loginUrl = 'users/login';
 const String homeUrl = 'home/get';
@@ -17,6 +17,7 @@ const String refreshTokenUrl = 'users/refreshToken';
 const String statesUrl = 'homes/states';
 const String districtsUrl = 'homes/districts';
 const String blocksUrl = 'homes/blocks';
+const String homeDataUrl = 'homes/data';
 const String villagesUrl = 'homes/villages';
 const String anganwadiCreateUrl = 'anganwadi/create';
 const String branchCreateUrl = 'branch/create';

@@ -417,7 +417,6 @@ class _AnganwadiAddScreenState extends State<AnganwadiAddScreen> {
                                       "districtId": _selectedDistrict?.id,
                                       "blockId": _selectedBlock?.id,
                                       "villageId": _selectedVillage?.id,
-                                      "pincode": _pincodeController.text,
                                       "address": _addressController.text,
                                       "partnerName": _nameController.text,
                                       "partnerUsername":

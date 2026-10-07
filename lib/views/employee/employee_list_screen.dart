@@ -45,7 +45,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Employee List',
+          'Staff List',
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
       ),
@@ -65,7 +65,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                       });
                     },
 
-                    hintText: 'Search employee...',
+                    hintText: 'Search staff...',
                     prefixIcon: const Icon(Icons.search_rounded),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
@@ -118,7 +118,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
       floatingActionButton:
           [
             "branch_head",
-            "aganwadi_head",
+            "sevika",
           ].contains(loginProvider.loginModel?.roleId?.slug)
           ? FloatingActionButton.extended(
               onPressed: () {
